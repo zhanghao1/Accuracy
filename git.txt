@@ -117,10 +117,9 @@ git push origin 本地分支名:远程分支名  # 创建远程分支
 
 
 
-增加文件
+增加文件/修改文件
 git add git.txt  
-修改文件
-cat git.txt
+
 提交更改
 git commit -m "新增文件"
 上传
