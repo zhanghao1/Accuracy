@@ -1,0 +1,116 @@
+git init  # 创建仓库
+
+添加文件到Git仓库，分两步：
+
+	第一步，使用命令git add <file>，注意，可反复多次使用，添加多个文件；
+
+	第二步，使用命令git commit，完成。
+
+git status  # 查看当前状态（是否有变动）
+
+git diff <file>  # 查看当前文件变动的内容
+
+git log  # 查看文件更改的历史
+git log --pretty=oneline   # 输出较少的信息，只输出commit_id
+
+git reset --hard HEAD^  #版本回退，会退到最近的一次提交， HEAD^^回退到倒数第二次， HEAD~100回退到100次
+git reset --hard 3628164<commit_id>    # 回到某个版本
+
+git  reflog  #记录操作
+在Git中，总是有后悔药可以吃的。当你用$ git reset --hard HEAD^回退到add distributed版本时，再想恢复到append GPL，
+就必须找到append GPL的commit id。Git提供了一个命令git reflog用来记录你的每一次命令：
+
+命令git checkout -- <file> #意思就是，把readme.txt文件在工作区的修改全部撤销，
+用命令git reset HEAD file可以把暂存区的修改撤销掉（unstage），重新放回工作区
+
+git rm <file>  #删除文件, 然后git commit -m ""提交
+
+git checkout -- <file>  # 当删除错了，可以还原
+
+
+创建远程分支：
+第1步：创建SSH Key。在用户主目录下，看看有没有.ssh目录，如果有，再看看这个目录下有没有id_rsa和id_rsa.pub
+这两个文件，如果已经有了，可直接跳到下一步。如果没有，打开Shell（Windows下打开Git Bash），创建SSH Key：
+
+$ ssh-keygen -t rsa -C "2236683729@qq.com"
+
+在github上新建respository,
+现在，我们根据GitHub的提示，在本地的learngit仓库下运行命令：
+
+$ git remote add origin git@github.com:zhanghao1/learngit.git
+
+请千万注意，把上面的michaelliao替换成你自己的GitHub账户名，否则，你在本地关联的就是我的远程库，关联没有问题，但是你以后推送是推不上去的，
+因为你的SSH Key公钥不在我的账户列表中。
+
+git push -u origin master  # 就把本地代码推送到远程库了
+
+注意：这里会报错failed to push some refs to git原因是远程分支上有个README.md文件，
+需要运行一下命令：
+git pull --rebase origin master
+
+git push origin master  # 以后提交代码命令
+
+你也许还注意到，GitHub给出的地址不止一个，还可以用https://github.com/michaelliao/gitskills.git这样的地址。
+实际上，Git支持多种协议，默认的git://使用ssh，但也可以使用https等其他协议。
+
+使用https除了速度慢以外，还有个最大的麻烦是每次推送都必须输入口令，
+但是在某些只开放http端口的公司内部就无法使用ssh协议而只能用https。
+
+
+git checkout -b dev    # 创建一个本地分支dev,并切换到dev分支
+相当于：
+git branch dev
+git checkout dev
+
+git branch  # 查看当前分支
+
+git merge dev   # git merge命令用于合并指定分支到当前分支。
+
+
+git branch -d dev   # 删除分支
+
+
+准备合并dev分支，请注意--no-ff参数，表示禁用Fast forward：
+git merge --no-ff -m "merge with no-ff" dev
+
+
+--no-ff 看出曾经合并过,在log中能看出分支提交；
+Fast forword看不出分支提交
+
+Git还提供了一个stash功能，可以把当前工作现场“储藏”起来，等以后恢复现场后继续工作：
+git stash
+刚才的工作现场存到哪去了？用git stash list命令看看：
+
+注意：此时的merge和
+
+一是用git stash apply恢复，但是恢复后，stash内容并不删除，你需要用git stash drop来删除；
+
+另一种方式是用git stash pop，恢复的同时把stash内容也删了：
+再用git stash list查看，就看不到任何stash内容了：
+
+
+Git友情提醒，feature-vulcan分支还没有被合并，如果删除，将丢失掉修改，如果要强行删除，
+需要使用命令git branch -D feature-vulcan。
+
+要查看远程库的信息，用git remote：
+
+现在，你的小伙伴要在dev分支上开发，就必须创建远程origin的dev分支到本地，于是他用这个命令创建本地dev分支：
+
+$ git checkout -b dev origin/dev
+
+因此，多人协作的工作模式通常是这样：
+
+首先，可以试图用git push origin branch-name推送自己的修改；
+
+如果推送失败，则因为远程分支比你的本地更新，需要先用git pull试图合并；
+
+如果合并有冲突，则解决冲突，并在本地提交；
+
+没有冲突或者解决掉冲突后，再用git push origin branch-name推送就能成功！
+
+如果git pull提示“no tracking information”，则说明本地分支和远程分支的链接关系没有创建，
+用命令git branch --set-upstream branch-name origin/branch-name。
+
+这就是多人协作的工作模式，一旦熟悉了，就非常简单。
+
+git push origin 本地分支名:远程分支名  # 创建远程分支
